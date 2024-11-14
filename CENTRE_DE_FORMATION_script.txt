@@ -1,0 +1,166 @@
+DROP DATABASE IF EXISTS centre_de_formation;
+
+CREATE DATABASE IF NOT EXISTS centre_de_formation;
+USE centre_de_formation;
+# -----------------------------------------------------------------------------
+#       TABLE : ETUDIANT
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ETUDIANT
+ (
+   NUMCNIETU VARCHAR(10) NOT NULL  ,
+   NOMETU CHAR(32) NOT NULL  ,
+   PRENOMETU CHAR(32) NOT NULL  ,
+   DATENAISSANCE CHAR(32) NOT NULL  ,
+   ADRESSEETU CHAR(32) NOT NULL  ,
+   VILLEETU CHAR(32) NOT NULL  ,
+   NIVEAUETU CHAR(32) NOT NULL  
+   , PRIMARY KEY (NUMCNIETU) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       TABLE : SESSION
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS SESSION
+ (
+   CODESESS VARCHAR(128) NOT NULL  ,
+   NOMSESS VARCHAR(32) NOT NULL  ,
+   DATEDEBUT DATE NOT NULL  ,
+   DATEFIN DATE NOT NULL  
+   , PRIMARY KEY (CODESESS) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       TABLE : SPECIALITE
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS SPECIALITE
+ (
+   CODESPEC VARCHAR(128) NOT NULL  ,
+   NOMSPEC CHAR(32) NOT NULL  ,
+   DESCSPEC CHAR(32) NOT NULL  
+   , PRIMARY KEY (CODESPEC) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       TABLE : FORMATION
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS FORMATION
+ (
+   CODEFORM VARCHAR(128) NOT NULL  ,
+   TITREFORM VARCHAR(128) NOT NULL  ,
+   DUREEFORM DATETIME NOT NULL  ,
+   PRIXFORM BIGINT(10) NOT NULL  
+   , PRIMARY KEY (CODEFORM) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       TABLE : EST_INSCRIT
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS EST_INSCRIT
+ (
+   NUMCNIETU VARCHAR(10) NOT NULL  ,
+   CODESESS VARCHAR(128) NOT NULL  
+   , PRIMARY KEY (NUMCNIETU,CODESESS) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       INDEX DE LA TABLE EST_INSCRIT
+# -----------------------------------------------------------------------------
+
+
+CREATE  INDEX I_FK_EST_INSCRIT_ETUDIANT
+     ON EST_INSCRIT (NUMCNIETU ASC);
+
+CREATE  INDEX I_FK_EST_INSCRIT_SESSION
+     ON EST_INSCRIT (CODESESS ASC);
+
+# -----------------------------------------------------------------------------
+#       TABLE : APPARTIENT
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS APPARTIENT
+ (
+   CODEFORM VARCHAR(128) NOT NULL  ,
+   CODESPEC VARCHAR(128) NOT NULL  
+   , PRIMARY KEY (CODEFORM,CODESPEC) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       INDEX DE LA TABLE APPARTIENT
+# -----------------------------------------------------------------------------
+
+
+CREATE  INDEX I_FK_APPARTIENT_FORMATION
+     ON APPARTIENT (CODEFORM ASC);
+
+CREATE  INDEX I_FK_APPARTIENT_SPECIALITE
+     ON APPARTIENT (CODESPEC ASC);
+
+# -----------------------------------------------------------------------------
+#       TABLE : CONCERNE
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS CONCERNE
+ (
+   CODESESS VARCHAR(128) NOT NULL  ,
+   CODEFORM VARCHAR(128) NOT NULL  
+   , PRIMARY KEY (CODESESS,CODEFORM) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       INDEX DE LA TABLE CONCERNE
+# -----------------------------------------------------------------------------
+
+
+CREATE  INDEX I_FK_CONCERNE_SESSION
+     ON CONCERNE (CODESESS ASC);
+
+CREATE  INDEX I_FK_CONCERNE_FORMATION
+     ON CONCERNE (CODEFORM ASC);
+
+
+# -----------------------------------------------------------------------------
+#       CREATION DES REFERENCES DE TABLE
+# -----------------------------------------------------------------------------
+
+
+ALTER TABLE EST_INSCRIT 
+  ADD FOREIGN KEY FK_EST_INSCRIT_ETUDIANT (NUMCNIETU)
+      REFERENCES ETUDIANT (NUMCNIETU) ;
+
+
+ALTER TABLE EST_INSCRIT 
+  ADD FOREIGN KEY FK_EST_INSCRIT_SESSION (CODESESS)
+      REFERENCES SESSION (CODESESS) ;
+
+
+ALTER TABLE APPARTIENT 
+  ADD FOREIGN KEY FK_APPARTIENT_FORMATION (CODEFORM)
+      REFERENCES FORMATION (CODEFORM) ;
+
+
+ALTER TABLE APPARTIENT 
+  ADD FOREIGN KEY FK_APPARTIENT_SPECIALITE (CODESPEC)
+      REFERENCES SPECIALITE (CODESPEC) ;
+
+
+ALTER TABLE CONCERNE 
+  ADD FOREIGN KEY FK_CONCERNE_SESSION (CODESESS)
+      REFERENCES SESSION (CODESESS) ;
+
+
+ALTER TABLE CONCERNE 
+  ADD FOREIGN KEY FK_CONCERNE_FORMATION (CODEFORM)
+      REFERENCES FORMATION (CODEFORM) ;
+
